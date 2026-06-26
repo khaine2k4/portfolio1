@@ -59,7 +59,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop */}
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="hidden items-center gap-4 lg:flex">
           <ul className="flex items-center gap-1">
             {links.map((l) => (
               <li key={l.href}>
@@ -89,7 +89,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile toggles */}
-        <div className="flex items-center gap-3 md:hidden">
+        <div className="flex items-center gap-3 lg:hidden">
           <LanguageToggle />
           <button onClick={() => setOpen(!open)} aria-label="Menu">
             {open ? <X size={24} /> : <Menu size={24} />}
@@ -99,7 +99,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {open && (
-        <ul className="flex flex-col gap-4 border-t border-white/5 bg-bg/95 px-6 py-6 backdrop-blur-xl md:hidden">
+        <ul className="flex flex-col gap-4 border-t border-white/5 bg-bg/95 px-6 py-6 backdrop-blur-xl lg:hidden">
           {links.map((l) => (
             <li key={l.href}>
               <a

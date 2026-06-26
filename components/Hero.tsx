@@ -93,7 +93,7 @@ export default function Hero() {
       onMouseMove={handleMove}
       onMouseLeave={handleLeave}
       id="home"
-      className="relative flex min-h-screen items-center justify-center overflow-hidden px-6"
+      className="relative flex min-h-screen flex-col items-center overflow-hidden px-6 pt-24 pb-12 md:pt-32"
     >
       {/* Aurora that follows cursor + grid */}
       <div className="pointer-events-none absolute inset-0 -z-10">
@@ -115,7 +115,7 @@ export default function Hero() {
         initial="hidden"
         animate="show"
         style={{ y: contentY, opacity: contentOpacity, scale: contentScale }}
-        className="mx-auto max-w-4xl text-center"
+        className="mx-auto my-auto max-w-4xl text-center"
       >
         {/* Avatar with rotating gradient ring */}
         <motion.div variants={item} className="mb-8 flex justify-center">
