@@ -100,14 +100,15 @@ export default function Hero() {
         <div className="bg-grid absolute inset-0" />
         {/* Brighter grid that glows around the cursor */}
         <div className="bg-grid-spot absolute inset-0" />
-        {/* Light that follows the cursor */}
-        <motion.div style={{ x: sx, y: sy }} className="absolute left-0 top-0">
+        {/* Light that follows the cursor — desktop only (two huge blurs that
+            do nothing on touch but are costly to composite on mobile GPUs). */}
+        <motion.div style={{ x: sx, y: sy }} className="absolute left-0 top-0 hidden md:block">
           <div className="h-[60vh] w-[60vh] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/35 blur-[120px]" />
           <div className="h-[40vh] w-[40vh] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-400/20 blur-[110px]" />
         </motion.div>
         <div className="absolute right-[18%] top-1/4 h-96 w-96 animate-blob rounded-full bg-cyan-500/30 blur-3xl [animation-delay:4s]" />
-        <div className="absolute bottom-1/4 left-[18%] h-96 w-96 animate-blob rounded-full bg-fuchsia-600/30 blur-3xl [animation-delay:8s]" />
-        <div className="absolute left-1/2 top-1/3 h-72 w-72 -translate-x-1/2 animate-blob rounded-full bg-indigo-500/20 blur-3xl [animation-delay:2s]" />
+        <div className="absolute bottom-1/4 left-[18%] hidden h-96 w-96 animate-blob rounded-full bg-fuchsia-600/30 blur-3xl [animation-delay:8s] sm:block" />
+        <div className="absolute left-1/2 top-1/3 hidden h-72 w-72 -translate-x-1/2 animate-blob rounded-full bg-indigo-500/20 blur-3xl [animation-delay:2s] sm:block" />
       </div>
 
       <motion.div
@@ -122,7 +123,7 @@ export default function Hero() {
           <div className="relative h-28 w-28 sm:h-32 sm:w-32">
             <div className="ring-glow absolute -inset-[3px] rounded-full" />
             <div className="absolute inset-[3px] overflow-hidden rounded-full border border-white/10 bg-bg">
-              <Avatar fill position="center 25%" className="h-full w-full rounded-full" />
+              <Avatar fill position="center 25%" priority sizes="128px" className="h-full w-full rounded-full" />
             </div>
           </div>
         </motion.div>

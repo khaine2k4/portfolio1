@@ -1,13 +1,25 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type P = { x: number; y: number; vx: number; vy: number; r: number; a: number };
 
 export default function Particles() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [enabled, setEnabled] = useState(false);
+
+  // The connection-line loop is O(n²) per frame — fine on a desktop GPU but
+  // the main cause of first-load jank on phones. Skip it entirely on touch /
+  // small screens and when the user prefers reduced motion.
+  useEffect(() => {
+    const skip = window.matchMedia(
+      "(max-width: 768px), (pointer: coarse), (prefers-reduced-motion: reduce)"
+    ).matches;
+    if (!skip) setEnabled(true);
+  }, []);
 
   useEffect(() => {
+    if (!enabled) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -102,7 +114,9 @@ export default function Particles() {
       window.removeEventListener("resize", onResize);
       window.removeEventListener("mousemove", onMove);
     };
-  }, []);
+  }, [enabled]);
+
+  if (!enabled) return null;
 
   return (
     <canvas

@@ -8,6 +8,7 @@ import Particles from "@/components/ui/Particles";
 import Preloader from "@/components/ui/Preloader";
 import AmbientBackground from "@/components/ui/AmbientBackground";
 import { LanguageProvider } from "@/lib/i18n";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin", "vietnamese"], variable: "--font-inter" });
 
@@ -35,6 +36,20 @@ export default function RootLayout({
   return (
     <html lang="vi" className={inter.variable}>
       <body className="noise font-sans antialiased">
+        {/* Google tag (gtag.js) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-HMQSL7GYB1"
+          strategy="lazyOnload"
+        />
+        <Script id="google-analytics" strategy="lazyOnload">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-HMQSL7GYB1');
+          `}
+        </Script>
         <LanguageProvider>
           <Preloader />
           <AmbientBackground />
@@ -47,3 +62,4 @@ export default function RootLayout({
     </html>
   );
 }
+

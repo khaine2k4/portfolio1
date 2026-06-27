@@ -40,6 +40,7 @@ export default function About() {
             <Avatar
               fill
               position="center 25%"
+              sizes="(max-width: 768px) 100vw, 288px"
               className="glow relative z-10 h-60 w-full shrink-0 rounded-xl md:h-64 md:w-72"
             />
             <div className="relative z-10 flex flex-col">

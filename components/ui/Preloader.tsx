@@ -8,16 +8,30 @@ export default function Preloader() {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
+    // Reduced motion: skip the count entirely, just clear the overlay.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setCount(100);
+      const id = setTimeout(() => setLoading(false), 150);
+      return () => clearTimeout(id);
+    }
+
     let raf = 0;
     let start = 0;
-    const duration = 1400;
+    let last = -1;
+    const duration = 1100;
     const step = (ts: number) => {
       if (!start) start = ts;
       const progress = Math.min((ts - start) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.round(eased * 100));
+      const next = Math.round(eased * 100);
+      // Only re-render when the displayed integer actually changes — phones
+      // can fire rAF >60fps and we don't want a React render on every tick.
+      if (next !== last) {
+        last = next;
+        setCount(next);
+      }
       if (progress < 1) raf = requestAnimationFrame(step);
-      else setTimeout(() => setLoading(false), 250);
+      else setTimeout(() => setLoading(false), 200);
     };
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
@@ -27,9 +41,9 @@ export default function Preloader() {
     <AnimatePresence>
       {loading && (
         <motion.div
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-bg"
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-bg [transform:translateZ(0)] [will-change:transform]"
           exit={{ y: "-100%" }}
-          transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
+          transition={{ duration: 0.55, ease: [0.76, 0, 0.24, 1] }}
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -39,9 +53,9 @@ export default function Preloader() {
             {count}%
           </motion.div>
           <div className="mt-6 h-[3px] w-48 overflow-hidden rounded-full bg-white/10">
-            <motion.div
-              className="h-full bg-gradient-to-r from-violet-500 to-cyan-400"
-              style={{ width: `${count}%` }}
+            <div
+              className="h-full origin-left bg-gradient-to-r from-violet-500 to-cyan-400 will-change-transform"
+              style={{ transform: `scaleX(${count / 100})` }}
             />
           </div>
           <p className="mt-4 text-xs uppercase tracking-[0.3em] text-gray-500">
