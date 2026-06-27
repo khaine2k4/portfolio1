@@ -6,7 +6,7 @@ Website portfolio cá nhân — Next.js 15 + TailwindCSS + Framer Motion. Thiế
 
 ```bash
 npm install      # cài dependencies
-npm run dev      # chạy dev tại http://localhost:3000
+npm run dev      # chạy dev tại http://localhost:3333
 npm run build    # build production
 npm start        # chạy bản build
 ```
@@ -19,9 +19,7 @@ Toàn bộ nội dung nằm trong thư mục `data/` — sửa ở đây, không
 |------|----------|
 | `data/site.ts` | Tên, role, giới thiệu, email, **link Spotify**, social links |
 | `data/projects.ts` | Danh sách dự án (tên, mô tả, tags, ảnh, link demo/github) |
-| `data/skills.ts` | Kỹ năng theo nhóm |
-| `data/experience.ts` | Timeline kinh nghiệm |
-| `data/posts.ts` | Bài viết blog |
+| `data/translations.ts` | Nội dung song ngữ EN/VI: roles, about, stats, kỹ năng, kinh nghiệm, blog |
 
 ### Đổi link Spotify
 Mở Spotify → bài hát/playlist → **Share → Copy link** → sửa thành dạng embed:
