@@ -34,7 +34,7 @@ export default function BackToTop() {
             <button
               onClick={toTop}
               aria-label="Back to top"
-              className="glow flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-gradient-to-r from-violet-600 to-cyan-500 text-white transition-transform duration-300 hover:scale-110"
+              className="glow flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white ring-1 ring-inset ring-white/15 transition-transform duration-300 hover:scale-110"
             >
               <ArrowUp size={18} />
             </button>

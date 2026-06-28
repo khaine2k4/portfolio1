@@ -64,10 +64,10 @@ export default function Projects() {
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
-            className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
+            className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
               filter === f.key
-                ? "border-transparent bg-gradient-to-r from-violet-600 to-cyan-500 text-white"
-                : "border-white/10 bg-white/5 text-gray-400 hover:text-white"
+                ? "bg-gradient-to-r from-violet-600 to-cyan-500 text-white"
+                : "bg-white/5 text-gray-400 ring-1 ring-inset ring-white/10 hover:text-white"
             }`}
           >
             {f.label}
