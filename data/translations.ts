@@ -59,6 +59,13 @@ export const translations = {
       close: "Close",
       visitSite: "Visit site",
       sourceCode: "Source code",
+      filters: {
+        all: "All",
+        web: "Web",
+        mobile: "Mobile",
+        database: "Database",
+        other: "Other",
+      },
       items: [
         {
           title: "Personal Portfolio Website",
@@ -260,6 +267,13 @@ export const translations = {
       close: "Đóng",
       visitSite: "Xem demo",
       sourceCode: "Mã nguồn",
+      filters: {
+        all: "Tất cả",
+        web: "Web",
+        mobile: "Mobile",
+        database: "Cơ sở dữ liệu",
+        other: "Khác",
+      },
       items: [
         {
           title: "Website Portfolio cá nhân",

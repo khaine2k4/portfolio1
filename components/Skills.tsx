@@ -3,6 +3,7 @@
 import Section from "@/components/ui/Section";
 import Reveal from "@/components/ui/Reveal";
 import SpotlightCard from "@/components/ui/SpotlightCard";
+import TechIcon from "@/components/ui/TechIcon";
 import { useT } from "@/lib/i18n";
 
 export default function Skills() {
@@ -20,8 +21,9 @@ export default function Skills() {
                 {group.items.map((item) => (
                   <span
                     key={item}
-                    className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-gray-200"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-gray-200"
                   >
+                    <TechIcon name={item} />
                     {item}
                   </span>
                 ))}

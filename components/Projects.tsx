@@ -7,14 +7,40 @@ import { Github, ExternalLink, X, ArrowUpRight } from "lucide-react";
 import Section from "@/components/ui/Section";
 import Tilt from "@/components/ui/Tilt";
 import SpotlightCard from "@/components/ui/SpotlightCard";
-import { projectMeta } from "@/data/projects";
+import { projectMeta, type ProjectCategory } from "@/data/projects";
 import { useT } from "@/lib/i18n";
+
+type Filter = "all" | ProjectCategory;
+
+const CATEGORY_ORDER: ProjectCategory[] = ["web", "mobile", "database", "other"];
 
 export default function Projects() {
   const { t } = useT();
-  const projects = t.projects.items.map((p, i) => ({ ...p, ...projectMeta[i] }));
+  // Merge translated text with language-independent metadata by index.
+  const allProjects = t.projects.items.map((p, i) => ({
+    ...p,
+    ...projectMeta[i],
+    _idx: i,
+  }));
+
+  const [filter, setFilter] = useState<Filter>("all");
+  // selected stores the ORIGINAL index (_idx) so the modal stays correct
+  // regardless of which filter is active.
   const [selected, setSelected] = useState<number | null>(null);
-  const active = selected !== null ? projects[selected] : null;
+  const activeProject =
+    selected !== null ? allProjects.find((p) => p._idx === selected) ?? null : null;
+
+  // Only show category buttons that actually have projects, in a fixed order.
+  const presentCategories = CATEGORY_ORDER.filter((c) =>
+    allProjects.some((p) => p.category === c)
+  );
+  const filters: { key: Filter; label: string }[] = [
+    { key: "all", label: t.projects.filters.all },
+    ...presentCategories.map((c) => ({ key: c as Filter, label: t.projects.filters[c] })),
+  ];
+
+  const visible =
+    filter === "all" ? allProjects : allProjects.filter((p) => p.category === filter);
 
   // Close on Escape + lock scroll while modal is open.
   useEffect(() => {
@@ -32,89 +58,109 @@ export default function Projects() {
 
   return (
     <Section id="projects" subtitle={t.projects.subtitle} title={t.projects.title} index="02">
-      <div className="grid gap-6 sm:grid-cols-2">
-        {projects.map((p, i) => (
-          <motion.div
-            key={p.title}
-            initial={{ opacity: 0, y: 28, filter: "blur(8px)" }}
-            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+      {/* Filter buttons */}
+      <div className="mb-10 flex flex-wrap gap-2">
+        {filters.map((f) => (
+          <button
+            key={f.key}
+            onClick={() => setFilter(f.key)}
+            className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
+              filter === f.key
+                ? "border-transparent bg-gradient-to-r from-violet-600 to-cyan-500 text-white"
+                : "border-white/10 bg-white/5 text-gray-400 hover:text-white"
+            }`}
           >
-            <Tilt className="h-full">
-              <SpotlightCard
-                className="glow-hover group relative h-full cursor-pointer overflow-hidden rounded-2xl border border-white/5 bg-surface transition-colors hover:border-violet-500/40"
-              >
-                <button
-                  onClick={() => setSelected(i)}
-                  className="absolute inset-0 z-20"
-                  aria-label={`${p.title} — ${t.projects.details}`}
-                />
-                <div className="relative z-10 h-48 overflow-hidden">
-                  <Image
-                    src={p.image}
-                    alt={p.title}
-                    fill
-                    sizes="(max-width: 640px) 100vw, 50vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/40 to-transparent" />
-                  <span className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-bg/60 opacity-0 backdrop-blur transition-opacity duration-300 group-hover:opacity-100">
-                    <ArrowUpRight size={16} />
-                  </span>
-                </div>
-
-                <div className="relative z-10 p-6">
-                  <h3 className="text-xl font-semibold transition-colors group-hover:text-accent">
-                    {p.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-gray-400">
-                    {p.description}
-                  </p>
-
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {p.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-gray-300"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="relative z-30 mt-5 flex gap-4">
-                    {p.demo && (
-                      <a
-                        href={p.demo}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center gap-1.5 text-sm text-gray-300 transition-colors hover:text-accent"
-                      >
-                        <ExternalLink size={16} /> Demo
-                      </a>
-                    )}
-                    {p.github && (
-                      <a
-                        href={p.github}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center gap-1.5 text-sm text-gray-300 transition-colors hover:text-accent"
-                      >
-                        <Github size={16} /> Code
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </SpotlightCard>
-            </Tilt>
-          </motion.div>
+            {f.label}
+          </button>
         ))}
       </div>
 
+      <motion.div layout className="grid gap-6 sm:grid-cols-2">
+        <AnimatePresence mode="popLayout">
+          {visible.map((p, i) => (
+            <motion.div
+              layout
+              key={p.title}
+              initial={{ opacity: 0, y: 28, filter: "blur(8px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, scale: 0.92, filter: "blur(6px)" }}
+              transition={{ duration: 0.5, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <Tilt className="h-full">
+                <SpotlightCard
+                  className="glow-hover group relative h-full cursor-pointer overflow-hidden rounded-2xl border border-white/5 bg-surface transition-colors hover:border-violet-500/40"
+                >
+                  <button
+                    onClick={() => setSelected(p._idx)}
+                    className="absolute inset-0 z-20"
+                    aria-label={`${p.title} — ${t.projects.details}`}
+                  />
+                  <div className="relative z-10 h-48 overflow-hidden">
+                    <Image
+                      src={p.image}
+                      alt={p.title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 50vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/40 to-transparent" />
+                    <span className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-bg/60 opacity-0 backdrop-blur transition-opacity duration-300 group-hover:opacity-100">
+                      <ArrowUpRight size={16} />
+                    </span>
+                  </div>
+
+                  <div className="relative z-10 p-6">
+                    <h3 className="text-xl font-semibold transition-colors group-hover:text-accent">
+                      {p.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-gray-400">
+                      {p.description}
+                    </p>
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {p.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-gray-300"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="relative z-30 mt-5 flex gap-4">
+                      {p.demo && (
+                        <a
+                          href={p.demo}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-1.5 text-sm text-gray-300 transition-colors hover:text-accent"
+                        >
+                          <ExternalLink size={16} /> Demo
+                        </a>
+                      )}
+                      {p.github && (
+                        <a
+                          href={p.github}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-1.5 text-sm text-gray-300 transition-colors hover:text-accent"
+                        >
+                          <Github size={16} /> Code
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </SpotlightCard>
+              </Tilt>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
+
       {/* Detail modal */}
       <AnimatePresence>
-        {active && (
+        {activeProject && (
           <motion.div
             className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-6"
             initial={{ opacity: 0 }}
@@ -134,8 +180,8 @@ export default function Projects() {
             >
               <div className="relative h-60 w-full overflow-hidden sm:h-72">
                 <Image
-                  src={active.image}
-                  alt={active.title}
+                  src={activeProject.image}
+                  alt={activeProject.title}
                   fill
                   sizes="(max-width: 768px) 100vw, 700px"
                   className="object-cover"
@@ -151,11 +197,11 @@ export default function Projects() {
               </div>
 
               <div className="p-6 sm:p-8">
-                <h3 className="text-2xl font-bold">{active.title}</h3>
-                <p className="mt-3 leading-relaxed text-gray-300">{active.description}</p>
+                <h3 className="text-2xl font-bold">{activeProject.title}</h3>
+                <p className="mt-3 leading-relaxed text-gray-300">{activeProject.description}</p>
 
                 <div className="mt-5 flex flex-wrap gap-2">
-                  {active.tags.map((tag) => (
+                  {activeProject.tags.map((tag) => (
                     <span
                       key={tag}
                       className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-gray-300"
@@ -166,9 +212,9 @@ export default function Projects() {
                 </div>
 
                 <div className="mt-7 flex flex-wrap gap-3">
-                  {active.demo && (
+                  {activeProject.demo && (
                     <a
-                      href={active.demo}
+                      href={activeProject.demo}
                       target="_blank"
                       rel="noreferrer"
                       className="glow flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-cyan-500 px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-105"
@@ -176,9 +222,9 @@ export default function Projects() {
                       <ExternalLink size={16} /> {t.projects.visitSite}
                     </a>
                   )}
-                  {active.github && (
+                  {activeProject.github && (
                     <a
-                      href={active.github}
+                      href={activeProject.github}
                       target="_blank"
                       rel="noreferrer"
                       className="flex items-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm font-semibold text-gray-200 transition-colors hover:bg-white/5"
